@@ -1,0 +1,23 @@
+{
+  "name": "Flutter Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "FLUTTER_VERSION": "3.13.3"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      },
+      "extensions": [
+        "Dart-Code.flutter",
+        "Dart-Code.dart-code"
+      ]
+    }
+  },
+  "postCreateCommand": "flutter doctor -v",
+  "remoteUser": "ubuntu"
+}
