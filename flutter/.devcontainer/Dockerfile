@@ -10,6 +10,30 @@ RUN apt-get update && apt-get install -y openjdk-17-jdk wget unzip git
 
 # Change default password
 RUN echo "root:root" | chpasswd
+RUN echo "ubuntu:ubuntu" | chpasswd
+
+# Show welcome message
+COPY <<EOF /etc/profile.d/welcome.sh 
+#!/bin/bash
+echo "💪 Welcome to the Flutter Dev Container!"
+echo "🤓 Some important information:"
+echo ""
+echo "🤖 Tool versions:"
+echo "- Ubuntu version: 24.04"
+echo "- Flutter version: ${FLUTTER_VERSION}"
+echo "- Android SDK version: 34.0.0-rc3"
+echo ""
+echo "📝 Also:"
+echo "- You may need to run 'flutter doctor --android-licenses' to accept licenses the first time."
+echo "- The default username is 'ubuntu' and the default password is 'ubuntu'."
+echo "- For root access, the password is 'root'."
+echo ""
+echo "🎉 Enjoy!"
+EOF
+
+RUN chmod a+x /etc/profile.d/welcome.sh
+RUN echo "source /etc/profile.d/welcome.sh" >> /home/ubuntu/.bashrc
+
 
 USER ubuntu
 WORKDIR /home/ubuntu
@@ -31,3 +55,5 @@ RUN echo "y" | sdkmanager --install "build-tools;34.0.0-rc3"
 RUN echo "y" | sdkmanager --install "platform-tools"
 RUN sdkmanager --install "platforms;android-34"
 RUN sdkmanager --install "emulator"
+
+ENTRYPOINT ["/bin/bash", "-l", "-c"]
