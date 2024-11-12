@@ -4,11 +4,14 @@
     "dockerfile": "Dockerfile",
     "context": ".",
     "args": {
-      "FLUTTER_VERSION": "3.13.3"
+      "SYSTEM_OS": "linux",
+      "FLUTTER_CHANNEL": "stable",
+      "FLUTTER_VERSION": ""
     }
   },
   "runArgs": [
-    "-h", "dev-container"
+    "-h",
+    "dev-container"
   ],
   "customizations": {
     "vscode": {

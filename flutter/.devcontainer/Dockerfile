@@ -1,10 +1,12 @@
 FROM ubuntu:24.04
 
 # Define Flutter version as an environment variable, with a default value
-ARG FLUTTER_VERSION=3.13.3
+ARG SYSTEM_OS=linux
+ARG FLUTTER_CHANNEL=stable
+ARG FLUTTER_VERSION=
 
 # Installing the required packages
-RUN apt-get update && apt-get install -y software-properties-common
+RUN apt-get update && apt-get install -y software-properties-common curl
 RUN add-apt-repository ppa:openjdk-r/ppa
 RUN apt-get update && apt-get install -y openjdk-17-jdk wget unzip git
 
@@ -20,7 +22,7 @@ echo "🤓 Some important information:"
 echo ""
 echo "🤖 Tool versions:"
 echo "- Ubuntu version: 24.04"
-echo "- Flutter version: ${FLUTTER_VERSION}"
+echo "- Flutter version: \$(/home/ubuntu/flutter/bin/flutter --version | head -n 1)"
 echo "- Android SDK version: 34.0.0-rc3"
 echo ""
 echo "📝 Also:"
@@ -34,14 +36,20 @@ EOF
 RUN chmod a+x /etc/profile.d/welcome.sh
 RUN echo "source /etc/profile.d/welcome.sh" >> /home/ubuntu/.bashrc
 
-
 USER ubuntu
 WORKDIR /home/ubuntu
 
 # Download and install the specified Flutter version
-RUN wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
-RUN tar xvf flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
-RUN rm flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
+RUN if [ -n "$FLUTTER_VERSION" ]; then \
+        echo "Let's download the specified Flutter version: $FLUTTER_VERSION"; \
+        wget https://storage.googleapis.com/flutter_infra_release/releases/${FLUTTER_CHANNEL}/${SYSTEM_OS}/flutter_${SYSTEM_OS}_${FLUTTER_VERSION}-stable.tar.xz ; \
+        tar xvf flutter_${SYSTEM_OS}_${FLUTTER_VERSION}-stable.tar.xz ; \
+        rm flutter_${SYSTEM_OS}_${FLUTTER_VERSION}-stable.tar.xz ; \
+    else \
+        echo "Let's download the latest Flutter version"; \
+        git clone -b stable https://github.com/flutter/flutter.git ; \
+        ./flutter/bin/flutter --version ; \
+    fi
 
 # Installing Android SDK
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
